@@ -1,0 +1,174 @@
+l: instructions1
+t: info
+q: Please, take a minute to read the instructions carefully. <br>
+Do the experiment in a quiet room without noise. <br>
+Use a desktop or laptop with headphones if you can (mobiles and tablets are not supported). <br>
+Set the volume to a comfortable level during the training round. <br>
+During the experiment, around 40 MB of data will be processed, so make sure you're on cable, Wi-Fi or have a suitable data plan :)
+
+l: instructions2
+t: info
+q: The experiment will go into full-screen mode automatically after the data is loaded. <br>
+The session starts with a training round in which you learn how to complete the accent-rating task and get familiar with the range of accents. It is followed by two main rating rounds. You can take breaks between the rounds. <br>
+Each round consists of several speech clips which are rated individually. After hearing the clip, please answer the question you'll see by clicking on the scale that appears on the screen. You can use the "replay" button to hear each clip one more time, and you can change your rating by clicking on the scale again. <br>
+Then click on the "next" button to confirm your rating. <br>
+There will be a green bar at the top of the screen to show your progress. <br>
+Click on the button below to start the experiment.
+
+l: scale_orientation
+t: set
+- random 1 2
+
+l: rating_question
+t: set
+- random 1 2
+
+l: rating_experiment
+t: experiment
+- rating_experiment
+
+page: begin
+
+l: age
+t: textline
+q: <b>Thank you for completing the experiment! Please, answer the following questions truthfully.</b><br>
+How old are you?
+- {min=10,max=110,require} Enter your age
+
+l: gender
+t: radio
+o: require
+q: How would you best describe yourself?
+- Woman
+- Man
+- {other} Other (fill in if you want)
+
+page: end
+
+page: begin
+
+l: native_language
+t: check
+o: require 1 2
+q: <b>What are the native languages in your family? Select at least one item, but not more than two items per person. If somebody happens to have more than two native languages, select the two which they use the most.</b><br>
+What is <b>your</b> native language?
+- Czech
+- Slovak
+- American English
+- British English
+- German
+- Polish
+- {other} Other (please specify)
+
+l: native_language_mother
+t: check
+o: require 1 2
+q: What is the native language of your <b>mother</b> (or a carer you grew up with)?
+- Czech
+- Slovak
+- American English
+- British English
+- German
+- Polish
+- {other} Other (please specify)
+
+l: native_language_father
+t: check
+o: require 1 2
+q: What is the native language of your <b>father</b> (or another carer you grew up with)?
+- Czech
+- Slovak
+- American English
+- British English
+- German
+- Polish
+- {other} Other (please specify)
+
+page: end
+
+page: begin
+
+l: english_language
+t: textline
+q: <b>If you speak any of the following languages as a foreign language, specify your proficiency on a scale from 1 (beginner) to 9 (advanced), and your age in years at the time when you started learning the language.</b><br>
+English
+- {min=0,max=9} <pre style="display:inline">English proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn English </pre>
+
+l: czech_language
+t: textline
+q: Czech
+- {min=0,max=9} <pre style="display:inline">Czech proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn Czech </pre>
+
+l: slovak_language
+t: textline
+q: Slovak
+- {min=0,max=9} <pre style="display:inline">Slovak proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn Slovak </pre>
+
+l: russian_language
+t: textline
+q: Russian
+- {min=0,max=9} <pre style="display:inline">Russian proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn Russian </pre>
+
+l: ukrainian_language
+t: textline
+q: Ukrainian
+- {min=0,max=9} <pre style="display:inline">Ukrainian proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn Ukrainian </pre>
+
+l: another_language
+t: textline
+q: Another foreign language (if you speak more than one, fill in the one you use the most)
+- <pre style="display:inline">Foreign language name      </pre>
+- {min=0,max=9} <pre style="display:inline">Proficiency                </pre>
+- {min=0,max=120} <pre style="display:inline">Age when starting to learn </pre>
+
+page: end
+
+page: begin
+
+l: accents
+t: range
+q: Are you familiar with the following accents in English?
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} British English accent
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} American English accent
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Other native accents (specify below)
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Czech accent in English
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Slovak accent in English
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Russian accent in English
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Ukrainian accent in English
+- {no_number,min=1,max=601,left=not at all,right=very much,start=0} Other non-native accents (specify below)
+
+l: other_accents
+t: textline
+q: Specify your familiarity with other accents in English.
+- <pre style="display:inline">Native (e.g., Australian) </pre>
+- <pre style="display:inline">Non-native (e.g., French) </pre>
+
+page: end
+
+l: device
+t: radio
+o: require
+q: What device did you use for the experiment?
+- Desktop / laptop with headphones
+- Desktop / laptop with speakers
+- {other} Other (please specify)
+
+l: reference
+t: radio
+o: require
+q: How did you learn about this study?
+- From a teacher
+- From a friend
+- From the researcher who runs this study
+- From the PsyToolkit user forum
+- {other} Other (please specify)
+
+l: feedback
+t: textbox
+q: Do you want to give any feedback (e.g., you recognized any of the speakers, etc.)?
+- {w=100,h=10} Write your message here:

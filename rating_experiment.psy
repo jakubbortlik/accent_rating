@@ -1,0 +1,377 @@
+options
+  mouse on
+  resolution 1260 600
+  fullscreen
+  var in scale_orientation rating_question
+  set &allowed_replays 1
+  set &timeout 3600000
+  set &task_delay 1000
+
+
+##################################################################
+# BITMAPS
+##################################################################
+bitmaps
+  # Scale
+  arrow
+  fixpoint
+  next
+  replay
+  replay_gray
+  scale_bar
+  #
+  # Scale endpoints
+  definitely_has_foreign_accent
+  definitely_is_native_speaker
+  sounds_like_a_native_speaker
+  very_strong_foreign_accent
+  #
+  # Instructions
+  how_strong
+  how_strong_instructions
+  how_sure
+  how_sure_instructions
+  first_rating_round
+  rating_round
+  training_round
+
+##################################################################
+# SOUNDS
+##################################################################
+include sounds.txt
+
+##################################################################
+# TABLES
+# Tables define the stimuli to be used.
+##################################################################
+
+table samples_A
+  include table_samples_A.txt
+
+table samples_A_phone
+  include table_samples_A_phone.txt
+
+table samples_B
+  include table_samples_B.txt
+
+table samples_B_phone
+  include table_samples_B_phone.txt
+
+table practice_A
+  include table_practice_A.txt
+
+table practice_A_phone
+  include table_practice_A_phone.txt
+
+table practice_B
+  include table_practice_B.txt
+
+table practice_B_phone
+  include table_practice_B_phone.txt
+
+
+##################################################################
+# TASKS
+# The individual tasks are composed of two parts:
+# 1. One of the tables included above.
+# 2. The rating procedure "part showTask" defined below.
+##################################################################
+
+part showTask
+  set $scale_clicks 0
+  # 1st bitmap - "Progress bar"
+  show progress TRIALCOUNT 210
+  # 2nd bitmap - "Fixpoint"
+  show bitmap fixpoint 0 0                          
+  set $fixpoint 2
+  if &rating_question == 1
+    if &samples_block == 0
+      # 3rd bitmap - question with instructions
+      show bitmap how_sure_instructions 0 -180     
+    fi
+    if &samples_block == 1
+      # 3rd bitmap - question
+      show bitmap how_sure 0 -150 
+    fi
+  fi
+  if &rating_question == 2
+    if &samples_block == 0
+      # 3rd bitmap - question with instructions
+      show bitmap how_strong_instructions 0 -180    
+    fi
+    if &samples_block == 1
+      # 3rd bitmap - question
+      show bitmap how_strong 0 -150                 
+    fi
+  fi
+  # Wait up to &timeout ms for mouse to reach Fixpoint
+  readmouse 2 &timeout range 2 2                    
+  clear -1
+  sound @1
+  delay @3
+  timestamp SoundPlayed
+  clear $fixpoint
+  if &scale_orientation == 1
+    # Draw endpoints (bitmaps 4, 5) and the scale (bitmaps 6-606)
+    include scale_l_to_r.txt                       
+  fi
+  if &scale_orientation == 2
+    # Draw endpoints (bitmaps 4, 5) and the scale (bitmaps 6-606) 
+    include scale_r_to_l.txt                       
+  fi
+  set $scaleStart 6
+  set $scaleEnd 606
+  # 607th bitmap - Gray Replay
+  show bitmap replay_gray 0 -150                   
+  # 608th bitmap - Active Replay
+  show bitmap replay 0 -150                        
+  set $grayReplayButton expression $scaleEnd + 1
+  set $replayButton expression $scaleEnd + 2
+  set $nextButton expression $scaleEnd + 3
+  set $next_clicked 0
+  set $next_button_shown 0
+  set $arrow_shown 0
+  set $replays 0
+  while $next_clicked == 0
+    readmouse l 1 &timeout range $scaleStart $nextButton
+    set $mouseClickX MOUSE_X
+    set $bitmap bitmap-under-mouse $mouseClickX MOUSE_Y range 6 609
+    if $bitmap == $nextButton
+      timestamp NextClicked
+      set $next_clicked 1
+    fi
+    if $replays < &allowed_replays
+      if $bitmap == $grayReplayButton
+        timestamp ReplayClicked
+        sound @1
+        set $replays increase
+        if $replays == &allowed_replays
+          clear $replayButton
+        fi
+      fi
+    fi
+    if $bitmap <= $scaleEnd
+      timestamp ScaleClicked
+      set $scale_clicks increase
+      if $next_button_shown == 0
+        # 609th bitmap - "next" button
+        show bitmap next 0 150                     
+        set $next_button_shown 1
+      fi
+      set $score expression $bitmap - ( $scaleStart - 1 )
+      if $arrow_shown == 1
+        # Clear the previous arrow
+        clear -1                                   
+      fi
+      show bitmap arrow $mouseClickX -40
+      set $arrow_shown 1
+    fi
+  while-end
+  silence @1
+  # Clear the previous arrow
+  clear -1                                         
+  # Clear except for progress bar
+  clear range 2 $nextButton                        
+  set $rt_sound_scale timestamp-diff SoundPlayed ScaleClicked
+  set $rt_sound_next timestamp-diff SoundPlayed NextClicked
+  if $replays == 0
+    set $rt_sound_replayed 0
+  fi
+  if $replays > 0
+    set $rt_sound_replayed timestamp-diff SoundPlayed ReplayClicked
+  fi
+  # The following information is saved in the output table:
+  # 1. @2 - stimulus name
+  # 2. $score - score is adjusted so that "NS"/"no FA" is always
+  #             low and "non-NS"/"heavy FA" is high
+  # 3. BLOCKNAME - combination of "practice" or "samples", "A" or
+  #                "B", "(normal)" or "phone"
+  # 4. $rt_sound_scale - Reaction time between playing the sound
+  #                      and clicking the scale
+  # 5. $rt_sound_next - Reaction time between playing the sound
+  #                     and clicking the "Next" button
+  # 6. $replays - The number of times the sample was replayed
+  # 7. $scale_clicks - The number of times the scale was clicked
+  delay &task_delay
+  # Alias variables so that the "save" fits on one line
+  set $rts expression $rt_sound_scale
+  set $rtn expression $rt_sound_next
+  set $rtr expression $rt_sound_replayed
+  save @2 $score BLOCKNAME $rts $rtn $rtr $replays $scale_clicks
+
+# Tasks define which table to use and call "part showTask"
+task samples_A
+  table samples_A
+  part showTask
+
+task samples_A_phone
+  table samples_A_phone
+  part showTask
+
+task samples_B
+  table samples_B
+  part showTask
+
+task samples_B_phone
+  table samples_B_phone
+  part showTask
+
+task practice_A
+  table practice_A
+  part showTask
+
+task practice_A_phone
+  table practice_A_phone
+  part showTask
+
+task practice_B
+  table practice_B
+  part showTask
+
+task practice_B_phone
+  table practice_B_phone
+  part showTask
+
+
+##################################################################
+# BLOCKS
+# Blocks define tasklists which contain one of tasks defined above
+##################################################################
+block practice_A
+  set &samples_block 0
+  message training_round mouse
+  tasklist
+    practice_A 42 all_before_repeat
+  end
+
+block practice_A_phone
+  set &samples_block 0
+  message training_round mouse
+  tasklist
+    practice_A_phone 42 all_before_repeat
+  end
+
+block practice_B
+  set &samples_block 0
+  message training_round mouse
+  tasklist
+    practice_B 42 all_before_repeat
+  end
+
+block practice_B_phone
+  set &samples_block 0
+  message training_round mouse
+  tasklist
+    practice_B_phone 42 all_before_repeat
+  end
+
+block samples_A1
+  set &samples_block 1
+  message first_rating_round mouse
+  tasklist
+    samples_A 84 all_before_repeat
+  end
+
+block samples_A2
+  set &samples_block 1
+  message rating_round mouse
+  tasklist
+    samples_A 84 all_before_repeat
+  end
+
+block samples_A_phone1
+  set &samples_block 1
+  message first_rating_round mouse
+  tasklist
+    samples_A_phone 84 all_before_repeat
+  end
+
+block samples_A_phone2
+  set &samples_block 1
+  message rating_round mouse
+  tasklist
+    samples_A_phone 84 all_before_repeat
+  end
+
+block samples_B1
+  set &samples_block 1
+  message first_rating_round mouse
+  tasklist
+    samples_B 84 all_before_repeat
+  end
+
+block samples_B2
+  set &samples_block 1
+  message rating_round mouse
+  tasklist
+    samples_B 84 all_before_repeat
+  end
+
+block samples_B_phone1
+  set &samples_block 1
+  message first_rating_round mouse
+  tasklist
+    samples_B_phone 84 all_before_repeat
+  end
+
+block samples_B_phone2
+  set &samples_block 1
+  message rating_round mouse
+  tasklist
+    samples_B_phone 84 all_before_repeat
+  end
+
+
+##################################################################
+# BLOCKORDERS
+# Blockorders define series of blocks.
+# If more blockorders are included, one is selected at random.
+##################################################################
+
+##############################
+# Only "clean" recordings
+##############################
+
+blockorder
+  practice_A
+  samples_A1
+  samples_A2
+
+blockorder
+  practice_B
+  samples_B1
+  samples_B2
+
+blockorder
+  practice_B
+  samples_A1
+  samples_A2
+
+blockorder
+  practice_A
+  samples_B1
+  samples_B2
+
+##############################
+# Only "phone" recordings
+##############################
+
+blockorder
+  practice_A_phone
+  samples_A_phone1
+  samples_A_phone2
+
+blockorder
+  practice_B_phone
+  samples_B_phone1
+  samples_B_phone2
+
+blockorder
+  practice_B_phone
+  samples_A_phone1
+  samples_A_phone2
+
+blockorder
+  practice_A_phone
+  samples_B_phone1
+  samples_B_phone2
