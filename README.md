@@ -27,3 +27,12 @@ EER measurements
   different speaker labels are correct.
 * `sid_results_table_individual_files_filtered.csv` - different-sex recordings
   have been filtered out
+
+Language identification
+-----------------------
+* `phonexia_lid_wrapper.sh` - wrapper for the Phonexia LID technology (this is
+  mainly here to show which subset of languages was used in the analysis)
+* `speechbrain_lid_wrapper.py` - wrapper for the SpeechBrain LID technology it
+  subclasses the EncoderClassifier to extract scores for English and Czech apart
+  from the best-matching language (the audio files are not included due to
+  license limitations so the script does not really produce the results!)
