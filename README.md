@@ -3,6 +3,12 @@ Accent Rating
 
 This is a collection of scripts and data I used when working on my dissertation.
 
+Recording procedure (Praat directory)
+---------------------------
+* recording_procedure.praat - this is the script I used for collecting the audio
+  data (it's a mess like most Praat scripts I've written, but it was good enough
+  to do what I wanted)
+
 PsyToolkit (v3.2.0)
 -------------------
 * `survey.sur` - PsyToolkit survey for collecting metadata and running the
