@@ -36,9 +36,23 @@ EER measurements
 
 Language identification
 -----------------------
-* `phonexia_lid_wrapper.sh` - wrapper for the Phonexia LID technology (this is
+* `phonexia_lid_wrapper.sh` - wrapper for the Phonexia `LID` technology (this is
   mainly here to show which subset of languages was used in the analysis)
-* `speechbrain_lid_wrapper.py` - wrapper for the SpeechBrain LID technology it
+* `speechbrain_lid_wrapper.py` - wrapper for the SpeechBrain `LID` technology it
   subclasses the EncoderClassifier to extract scores for English and Czech apart
   from the best-matching language (the audio files are not included due to
   license limitations so the script does not really produce the results!)
+
+Speaker identification
+----------------------
+* `sid4_wrapper.sh` - wrapper for the Phonexia `SID4` technology. A simple helper
+  script which extracts voiceprints from all wave files in one directory and
+  then compares all voiceprints with each other. It also saves the amount of
+  "net speech" in each voiceprint to a file.
+* `speechbrain_sid_wrapper.py` - a wrapper for SpeechBrain's `SpeakerRecognition`.
+  It has options for computing embeddings from audio files or loading previously
+  created embeddings. It subclasses `SpeakerRecognition` in order to be able to
+  perform verification on embeddings instead of on audio files.
+  The script creates embeddings from all audio files in a directory and then
+  performs speaker verification either on  all combinations or all permutations
+  of the embeddings set.

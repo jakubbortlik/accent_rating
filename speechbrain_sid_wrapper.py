@@ -109,15 +109,14 @@ if __name__ == '__main__':
     os.makedirs(emb_dir, exist_ok=True)
     wav_list = get_file_list(wav_dir)
 
-    load_embeddings = 1
-
-    if load_embeddings == 1:  # Load embeddings
+    load_embeddings = False
+    if load_embeddings:  # Load embeddings
         emb_list = (os.path.join(emb_dir, f) for f in os.listdir(emb_dir) if os.path.splitext(f)[1] == emb_ext)
         emb_dict = {f: torch.load(f) for f in emb_list}
-    else:  # Compute embeddings
+    else:                # Compute embeddings
         emb_dict = {w: make_embeddings(w, emb_dir, emb_ext) for w in wav_list}
 
-    get_combinations = 0
+    get_combinations = False
     if get_combinations:
         score_file = os.path.join(emb_dir, 'scores_combinations.sco')
         with open(score_file, 'w') as out_file:
